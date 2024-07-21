@@ -7,7 +7,11 @@ import lombok.Data;
  */
 @Data
 public class ExecuteProcessMessage {
+    /**
+     * 进程执行状态
+     */
     private Integer exitValue;
+
     /**
      * 正确信息
      */
@@ -17,5 +21,14 @@ public class ExecuteProcessMessage {
      * 错误信息
      */
     private String errorMessage;
+
+    /**
+     * 执行时间
+     */
+    private Long time;
+    /**
+     * 占用的内存
+     */
+    private Long memory;
 
 }

@@ -9,10 +9,15 @@ public class ExecuteCodeResponse {
     /**
      * 输出数据
      */
-    List<String> output;
+   private List<String> outputList;
 
     /**
      * 题目信息
      */
-    JudgeInfo judgeInfo;
+    private JudgeInfo judgeInfo;
+
+    /**
+     * 状态码
+     */
+    private Integer status;
 }
