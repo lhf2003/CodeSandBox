@@ -27,10 +27,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class JavaDockerCodeSandBox implements CodeSandBox {
     private static final String GLOBAL_CODE_DIR_NAME = "tmpCode";
     private static final String GLOBAL_JAVA_CLASS_NAME = "Main.java";
+    private static final Long TIME_LIMIT = 5000L;
     private static Boolean FIRST_INIT = true;
 
     public static void main(String[] args) {
@@ -117,6 +119,7 @@ public class JavaDockerCodeSandBox implements CodeSandBox {
         //设置主机配置
         HostConfig hostConfig = new HostConfig();
         hostConfig.withCpuCount(1L);
+        hostConfig.withMemorySwap(0L);
         hostConfig.withMemory(100 * 1000 * 1000L);
         hostConfig.setBinds(new Bind(userCodeParentPath, new Volume("/app")));
         //指定镜像
@@ -124,6 +127,8 @@ public class JavaDockerCodeSandBox implements CodeSandBox {
         //构建交互式操作终端 docker run -v userCodeParentPath:/app --stderr --stdin --stdout --tty /bin/sh
         CreateContainerResponse createContainerResponse = containerCmd
                 .withHostConfig(hostConfig)
+                .withNetworkDisabled(true)
+                .withReadonlyRootfs(true)
                 .withAttachStderr(true)
                 .withAttachStdin(true)
                 .withAttachStdout(true)
@@ -183,6 +188,7 @@ public class JavaDockerCodeSandBox implements CodeSandBox {
                 }
             });
             ExecStartCmd execStartCmd = dockerClient.execStartCmd(execId);
+            final boolean[] outTimeLimit = {true};
             final String[] successMessage = {null};
             final String[] errorMessage = {null};
             try {
@@ -201,7 +207,15 @@ public class JavaDockerCodeSandBox implements CodeSandBox {
                         }
                         super.onNext(frame);
                     }
-                }).awaitCompletion();
+
+                    //进程执行完毕后会到这里方法
+                    @Override
+                    public void onComplete() {
+                        //执行到这里表示没超时
+                        outTimeLimit[0] = false;
+                        super.onComplete();
+                    }
+                }).awaitCompletion(TIME_LIMIT, TimeUnit.MICROSECONDS); //超时控制
                 statsCmd.close();
                 stopWatch.stop();
                 executeProcessMessage.setTime(stopWatch.getLastTaskTimeMillis());

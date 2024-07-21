@@ -14,18 +14,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-public class JavaCodeBox implements CodeSandBox {
+public class JavaNativeCodeSandBox implements CodeSandBox {
     private static final String GLOBAL_CODE_DIR_NAME = "tmpCode";
     private static final String GLOBAL_JAVA_CLASS_NAME = "Main.java";
 
     public static void main(String[] args) {
-        JavaCodeBox javaCodeBox = new JavaCodeBox();
+        JavaNativeCodeSandBox javaNativeCodeSandBox = new JavaNativeCodeSandBox();
         ExecuteCodeRequest ExecuteCodeRequest = new ExecuteCodeRequest();
         String userCode = ResourceUtil.readStr("SimpleComputer/MemoryError.java", StandardCharsets.UTF_8);
         ExecuteCodeRequest.setCode(userCode);
         ExecuteCodeRequest.setLanguage("java");
         ExecuteCodeRequest.setInput(Arrays.asList("1 2", "3 4"));
-        ExecuteCodeResponse Execute = javaCodeBox.Execute(ExecuteCodeRequest);
+        ExecuteCodeResponse Execute = javaNativeCodeSandBox.Execute(ExecuteCodeRequest);
         System.out.println(Execute);
     }
 
