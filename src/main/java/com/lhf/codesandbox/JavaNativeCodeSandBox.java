@@ -13,12 +13,12 @@ public class JavaNativeCodeSandBox extends JavaCodeSandBoxTemplate {
 
     public static void main(String[] args) {
         JavaNativeCodeSandBox javaNativeCodeSandBox = new JavaNativeCodeSandBox();
-        ExecuteCodeRequest ExecuteCodeRequest = new ExecuteCodeRequest();
-        String userCode = ResourceUtil.readStr("SimpleComputer/MemoryError.java", StandardCharsets.UTF_8);
-        ExecuteCodeRequest.setCode(userCode);
-        ExecuteCodeRequest.setLanguage("java");
-        ExecuteCodeRequest.setInput(Arrays.asList("1 2", "3 4"));
-        ExecuteCodeResponse Execute = javaNativeCodeSandBox.doExecute(ExecuteCodeRequest);
+        ExecuteCodeRequest executeCodeRequest = new ExecuteCodeRequest();
+        String userCode = ResourceUtil.readStr("SimpleComputer/Main.java", StandardCharsets.UTF_8);
+        executeCodeRequest.setCode(userCode);
+        executeCodeRequest.setLanguage("java");
+        executeCodeRequest.setInput(Arrays.asList("1 2", "3 4"));
+        ExecuteCodeResponse Execute = javaNativeCodeSandBox.doExecute(executeCodeRequest);
         System.out.println(Execute);
     }
 

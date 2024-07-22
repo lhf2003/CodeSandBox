@@ -1,6 +1,15 @@
 package com.lhf.codesandbox;
 
 import cn.hutool.core.io.FileUtil;
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.PullImageCmd;
+import com.github.dockerjava.api.command.PullImageResultCallback;
+import com.github.dockerjava.api.model.PullResponseItem;
+import com.github.dockerjava.core.DefaultDockerClientConfig;
+import com.github.dockerjava.core.DockerClientBuilder;
+import com.github.dockerjava.core.DockerClientConfig;
+import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
+import com.github.dockerjava.transport.DockerHttpClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -32,7 +41,37 @@ class CodeSandboxApplicationTests {
         // 用户代码文件路径（已写入用户代码）
         File userCodeFilePath = FileUtil.writeString(code, userCodePath, StandardCharsets.UTF_8);
         System.out.println(userCodeFilePath.getParent());
+        System.out.println(userCodeFilePath);
 
     }
 
+    @Test
+    public void testDocker() {
+        DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
+                .withDockerHost("unix:///var/run/docker.sock")
+                .build();
+
+        DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
+                .dockerHost(config.getDockerHost())
+                .build();
+
+        DockerClient dockerClient = DockerClientBuilder.getInstance(config)
+                .withDockerHttpClient(httpClient)
+                .build();
+        //拉取镜像
+        String image = "java:openjdk-8u111-alpine";
+        PullImageCmd pullImageCmd = dockerClient.pullImageCmd(image);
+        try {
+            pullImageCmd.exec(new PullImageResultCallback() {
+                @Override
+                public void onNext(PullResponseItem item) {
+                    System.out.println("拉取镜像中：" + item);
+                }
+            }).awaitCompletion();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("拉取镜像成功");
+
+    }
 }

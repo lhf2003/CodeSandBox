@@ -51,6 +51,8 @@ public class ProcessUtil {
             stopWatch.stop();
             long taskTimeMillis = stopWatch.getLastTaskTimeMillis();
             executeProcessMessage.setTime(taskTimeMillis);
+            // 本地调用没有实现获取内存
+//            executeProcessMessage.setMemory();
         } catch (Exception e) {
             e.printStackTrace();
         }
